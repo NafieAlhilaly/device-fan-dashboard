@@ -1,0 +1,63 @@
+name: PHP with MySQL CI
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  test-app:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: "${{ secrets.MYSQL_ROOT_PASSWORD }}"
+          MYSQL_DATABASE: "${{ secrets.MYSQL_DATABASE }}"
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        extensions: mysqli
+        tools: composer
+
+    - name: Verify MySQL connection
+      run: |
+        while ! mysqladmin ping -h"127.0.0.1" -u"testuser" -p"testpass" --silent; do
+          sleep 1
+        done
+
+    - name: Run application tests
+      env:
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        DB_DATABASE: "${{ secrets.MYSQL_DATABASE }}"
+        DB_USERNAME: "${{ secrets.MYSQL_USERNAME }}"
+        DB_PASSWORD: "${{ secrets.MYSQL_ROOT_PASSWORD }}"
+      run: |
+        # Install dependencies if you're using composer
+        # composer install --no-progress --prefer-dist
+        
+        # Run your tests directly on the runner
+        # For example using PHPUnit:
+        # vendor/bin/phpunit
+        
+        # Or test database connection with a simple script
+        php -r '
+          $conn = new mysqli(getenv("DB_HOST"), getenv("DB_USERNAME"), getenv("DB_PASSWORD"), getenv("DB_DATABASE"), getenv("DB_PORT"));
+          if ($conn->connect_error) {
+            throw new Exception("Connection failed: " . $conn->connect_error);
+          }
+          echo "Connected to MySQL successfully!";
+          $conn->close();
+        '
