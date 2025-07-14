@@ -1,0 +1,42 @@
+/* style.css */
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.status-on {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.status-off {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.device-badge {
+    font-size: 0.8rem;
+    margin-left: 5px;
+}
+
+.action-buttons .btn {
+    margin-right: 5px;
+}
+
+/* Additional styles for better spacing */
+.container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.card-header h3 {
+    margin-bottom: 0;
+}
+
+.table-responsive {
+    margin-top: 1rem;
+}
+
+.table {
+    margin-bottom: 0;
+}
